@@ -1,5 +1,3 @@
----
-
 ## 🧩 Agents Overview
 
 - **Root Agent**: Acts as the entry point for user prompts. It interprets intent and routes tasks to the appropriate subagents or tools.
@@ -7,7 +5,7 @@
 - **Analytics Agent**: Converts natural language to Python code for data analysis and plotting. Receives data from the Database Agent.
 - **BigQuery ML Agent**: Handles model training and inference using BigQuery ML. Always begins by querying a RAG corpus of the official BQML reference guide.
 
----
+
 
 ## 🧠 RAG Integration
 
