@@ -56,3 +56,22 @@ BIGQUERY_AGENT_MODEL='gemini-2.5-flash' # or whatever you like
 BASELINE_NL2SQL_MODEL='gemini-2.5-flash' # or whatever you like
 CHASE_NL2SQL_MODEL='gemini-2.5-flash' # or whatever you like
 BQML_AGENT_MODEL='gemini-2.5-flash' # or whatever you like
+
+
+
+## 🧪 Python Environment Setup
+
+To isolate dependencies and avoid conflicts, create a virtual environment inside the `data-science` directory and install the required libraries:
+
+1. **Navigate to the data-science folder**
+   ```bash
+   cd python/agents/db-da-ds-multi-agent/data-science
+
+2. python -m venv .venv
+
+3. .venv\Scripts\activate
+
+4. pip install -r requirements.txt
+
+
+
