@@ -1,0 +1,13 @@
+absl==0.0
+fastapi==0.120.0
+google_cloud_aiplatform==1.121.0
+immutabledict==4.2.2
+numpy==2.3.4
+pandas==2.3.3
+protobuf==6.33.0
+pytest==8.4.2
+python-dotenv==1.2.1
+regex==2025.10.23
+sqlglot==27.28.1
+uvicorn==0.38.0
+google-adk==1.16.0
