@@ -74,7 +74,7 @@ To isolate dependencies and avoid conflicts, create a virtual environment inside
 4. pip install -r requirements.txt
 
 📚 ADK Documentation
-For more details on agent setup, orchestration, and tooling, refer to the official ADK documentation. 
+For more details on agent setup, orchestration, and tooling, refer to the official ADK documentation
 
 
 
