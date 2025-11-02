@@ -1,110 +1,60 @@
-# Agent Development Kit (ADK) Python Samples
+---
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+## 🧩 Agents Overview
 
-<img src="https://github.com/google/adk-docs/blob/main/docs/assets/agent-development-kit.png" alt="Agent Development Kit Logo" width="150">
+- **Root Agent**: Acts as the entry point for user prompts. It interprets intent and routes tasks to the appropriate subagents or tools.
+- **Database Agent**: Converts natural language to SQL using Gemini and queries BigQuery. I ahve used native Gemini 2.5 Flash for this.
+- **Analytics Agent**: Converts natural language to Python code for data analysis and plotting. Receives data from the Database Agent.
+- **BigQuery ML Agent**: Handles model training and inference using BigQuery ML. Always begins by querying a RAG corpus of the official BQML reference guide.
 
-This collection provides ready-to-use sample agents built on top of Python
-[Agent Development Kit](https://github.com/google/adk-python). These agents
-cover a range of common use cases and complexities, from simple conversational
-bots to complex multi-agent workflows.
+---
 
-## 🚀 Getting Started with Python Samples
+## 🧠 RAG Integration
 
-Follow these steps to set up and run the sample agents:
+The BQML Agent is grounded in documentation. It does not rely on LLM memory alone. Instead, it uses a pre-ingested RAG corpus containing the BigQuery ML reference guide. At runtime:
 
-1.  **Prerequisites:**
-    *   **Install Python ADK:** Ensure you have Python Agent
-        Development Kit installed and configured. Follow the Python instructions in the
-        [ADK Installation Guide](https://google.github.io/adk-docs/get-started/installation/#python).
-    *   **Set Up Environment Variables:** Each agent example relies on a `.env`
-        file for configuration (like API keys, Google Cloud project IDs, and
-        location). This keeps secrets out of the code.
-        *   You will need to create a `.env` file in each agent's directory you
-            wish to run (usually by copying the provided `.env.example`).
-        *   Setting up these variables, especially obtaining Google Cloud
-            credentials, requires careful steps. Refer to the **Environment
-            Setup** section in the [ADK Installation
-            Guide](https://google.github.io/adk-docs/get-started/installation/#python)
-            for detailed instructions.
-    *   **Google Cloud Project (Recommended):** While some agents might run
-        locally with just an API key, most leverage Google Cloud services like
-        Vertex AI and BigQuery. A configured Google Cloud project is highly
-        recommended. See the
-        [ADK Quickstart](https://google.github.io/adk-docs/get-started/quickstart/#python)
-        for setup details.
+- It queries the corpus using `rag_response`.
+- Retrieves the most relevant documentation snippets.
+- Generates SQL based on the retrieved context.
+- Presents the SQL to the user for review.
+- Executes only after explicit user approval.
+
+The RAG corpus is created once using `reference_guide_RAG/rag_setup.py` and referenced via the `BQML_RAG_CORPUS_NAME` in the `.env` file.
+
+---
+
+## ⚙️ .env Configuration
+
+Create a `.env` file in the root directory with the following content:
+
+```env
+GOOGLE_GENAI_USE_VERTEXAI=1 #or 0 if you use API keys
 
 
-2.  **Clone this repository:**
+# ML Dev backend config (optional)
+GOOGLE_API_KEY= # if above is 0
 
-    To start working with the ADK Python samples, first clone the public `adk-samples` repository:
-    ```bash
-    git clone https://github.com/google/adk-samples.git
-    cd adk-samples/python
-    ```
+# Vertex backend config
+GOOGLE_CLOUD_PROJECT=
+GOOGLE_CLOUD_LOCATION= # e.g. europe-west2 
 
-3.  **Explore the Agents:**
+# SQLGen method
+NL2SQL_METHOD="BASELINE"  
 
-    *   Navigate to the `agents/` directory.
-    *   The `agents/README.md` provides an overview and categorization of the available agents.
-    *   Browse the subdirectories. Each contains a specific sample agent with its own
-    `README.md`.
+# BigQuery Agent configuration
+BQ_COMPUTE_PROJECT_ID=
+BQ_DATA_PROJECT_ID=
+BQ_DATASET_ID=
 
-4.  **Run an Agent:**
-    *   Choose an agent from the `agents/` directory.
-    *   Navigate into that agent's specific directory (e.g., `cd agents/llm-auditor`).
-    *   Follow the instructions in *that agent's* `README.md` file for specific
-        setup (like installing dependencies via `poetry install`) and running
-        the agent.
-    *   Browse the folders in this repository. Each agent and tool have its own
-        `README.md` file with detailed instructions.
+# RAG Corpus for BQML Agent
+BQML_RAG_CORPUS_NAME='projects/xxxxxxxx/locations/europe-west4/ragCorpora/xxxxxxxx'
 
-**Notes:**
-
-These agents have been built and tested using
-[Google models](https://cloud.google.com/vertex-ai/generative-ai/docs/learn/models)
-on Vertex AI. You can test these samples with other models as well. Please refer
-to [ADK Tutorials](https://google.github.io/adk-docs/tutorials/) to use
-other models for these samples.
-
-## 🧱 Repository Structure
-```bash
-.
-├── python                      # Contains all the Python sample code
-│   ├── agents                  # Contains individual agent samples
-│   │   ├── agent1              # Specific agent directory
-│   │   │   └── README.md       # Agent-specific instructions
-│   │   ├── agent2
-│   │   │   └── README.md
-│   │   ├── ...
-│   │   └── README.md           # Overview and categorization of agents
-│   └── README.md               # This file (Repository overview)
-```
-
-## ℹ️ Getting help
-
-If you have any questions or if you found any problems with this repository,
-please report through
-[GitHub issues](https://github.com/google/adk-samples/issues).
-
-## 🤝 Contributing
-
-We welcome contributions from the community! Whether it's bug reports, feature
-requests, documentation improvements, or code contributions, please see our
-[**Contributing Guidelines**](https://github.com/google/adk-samples/blob/main/CONTRIBUTING.md)
-to get started.
-
-## 📄 License
-
-This project is licensed under the Apache 2.0 License - see the
-[LICENSE](https://github.com/google/adk-samples/blob/main/LICENSE) file for
-details.
-
-## Disclaimers
-
-This is not an officially supported Google product. This project is not eligible
-for the
-[Google Open Source Software Vulnerability Rewards Program](https://bughunters.google.com/open-source-security).
-
-The agents in this project are intended for demonstration purposes only. They is
-not intended for use in a production environment.
+# Code Interpreter Extension (optional)
+CODE_INTERPRETER_EXTENSION_NAME=''  # Leave empty , I didn't use code interpreter
+# Models used in Agents
+ROOT_AGENT_MODEL='gemini-2.5-flash' # or whatever you like
+ANALYTICS_AGENT_MODEL='gemini-2.5-flash' # or whatever you like
+BIGQUERY_AGENT_MODEL='gemini-2.5-flash' # or whatever you like
+BASELINE_NL2SQL_MODEL='gemini-2.5-flash' # or whatever you like
+CHASE_NL2SQL_MODEL='gemini-2.5-flash' # or whatever you like
+BQML_AGENT_MODEL='gemini-2.5-flash' # or whatever you like
